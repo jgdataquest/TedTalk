@@ -80,7 +80,7 @@ xText
   .attr("data-name", "comments")
   .attr("data-axis", "x")
   .attr("class", "aText active x")
-  .text("Commenasdfts");
+  .text("Comments");
 // // 2. Age
 xText
   .append("text")
@@ -190,17 +190,17 @@ function visualize(theData) {
       // x key
       var theX;
 
-      // Grab the state name.
+      // Create dynamic values for the tooltip
       var theTitle = "<div>" + d.title + "</div>";
       var theFilmDate = "<div>" + "Filmed Date: " + d.film_date + "</div>";
       // Snatch the y value's key and value.
       var theY = "<div>" + curY + ": " + d[curY] + "</div>";
 
-      //EXAMPLE OF PUTTING A PICTURE INSIDE THE TOOLTIP
+      //MARIAH: EXAMPLE OF PUTTING A PICTURE INSIDE THE TOOLTIP
       var thePicture = "<img src='http://r.ddmcdn.com/s_f/o_1/cx_462/cy_245/cw_1349/ch_1349/w_720/APL/uploads/2015/06/caturday-shutterstock_149320799.jpg' style='width:40px;height:40px'>"
       
 
-      // SETTING THE X VALUES
+      //MARIAH: SETTING THE X VALUES
       if (curX === "views") {
         // Grab the x key and a version of the value formatted to show percentage
         theX = "<div>" + curX + ": " + d[curX] + "</div>";
@@ -235,6 +235,8 @@ function visualize(theData) {
     xMax = d3.max(theData, function(d) {
       return parseFloat(d[curX]) * 1.10;
     });
+
+    //MARIAH: SET PARAMETERS SO THAT WE CAN SCALE ACCORDINGLY
   }
 
   // b. change the min and max for y
@@ -365,12 +367,15 @@ function visualize(theData) {
     .on("mouseover", function(d) {
       // Show the tooltip
       toolTip.show(d);
+      toolTip.style("display",null);
+      
       // Highlight the state circle's border
       d3.select(this).style("stroke", "#323232");
     })
     .on("mouseout", function(d) {
       // Remove the tooltip
-      toolTip.hide(d);
+      toolTip.style("display","none");
+      // toolTip.hide(d);
       // Remove highlight
       d3.select(this).style("stroke", "#e3e3e3");
     });
