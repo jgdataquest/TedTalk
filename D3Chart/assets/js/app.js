@@ -14,7 +14,7 @@ var width = parseInt(d3.select("#scatter").style("width"));
 var height = width - width / 3.9;
 
 // Margin spacing for graph
-var margin = 20;
+var margin = 10;
 
 // space for placing words
 var labelArea = 110;
@@ -36,11 +36,11 @@ var svg = d3
 // it in the mobility section of our code.
 var circRadius;
 function crGet() {
-  if (width <= 530) {
+  if (width <= 630) {
     circRadius = 5;
   }
   else {
-    circRadius = 15;
+    circRadius = 20;
   }
 }
 crGet();
@@ -82,21 +82,21 @@ xText
   .attr("class", "aText active x")
   .text("Comments");
 // // 2. Age
-// xText
-//   .append("text")
-//   .attr("y", 0)
-//   .attr("data-name", "comments")
-//   .attr("data-axis", "x")
-//   .attr("class", "aText inactive x")
-//   .text("comments");
-// // 3. Income
-// xText
-//   .append("text")
-//   .attr("y", 26)
-//   .attr("data-name", "income")
-//   .attr("data-axis", "x")
-//   .attr("class", "aText inactive x")
-//   .text("Household Income (Median)");
+xText
+  .append("text")
+  .attr("y", 0)
+  .attr("data-name", "comments")
+  .attr("data-axis", "x")
+  .attr("class", "aText inactive x")
+  .text("comments");
+// 3. Income
+xText
+  .append("text")
+  .attr("y", 26)
+  .attr("data-name", "income")
+  .attr("data-axis", "x")
+  .attr("class", "aText inactive x")
+  .text("Household Income (Median)");
 
 // B) Left Axis
 // ============
@@ -132,22 +132,22 @@ yText
   .text("views");
 
 // 2. Smokes
-// yText
-//   .append("text")
-//   .attr("x", 0)
-//   .attr("data-name", "comments")
-//   .attr("data-axis", "y")
-//   .attr("class", "aText inactive y")
-//   .text("comments");
+yText
+  .append("text")
+  .attr("x", 0)
+  .attr("data-name", "comments")
+  .attr("data-axis", "y")
+  .attr("class", "aText inactive y")
+  .text("comments");
 
-// // 3. Lacks Healthcare
-// yText
-//   .append("text")
-//   .attr("y", 26)
-//   .attr("data-name", "healthcare")
-//   .attr("data-axis", "y")
-//   .attr("class", "aText inactive y")
-//   .text("Lacks Healthcare (%)");
+// 3. Lacks Healthcare
+yText
+  .append("text")
+  .attr("y", 26)
+  .attr("data-name", "healthcare")
+  .attr("data-axis", "y")
+  .attr("class", "aText inactive y")
+  .text("Lacks Healthcare (%)");
 
 // 2. Import our .csv file.
 // ========================
@@ -156,7 +156,7 @@ yText
 // by the Behavioral Risk Factor Surveillance System.
 
 // Import our CSV data with d3's .csv import method.
-d=d3.csv("assets/data/ted_main_clean.csv", function(data) {
+d = d3.csv("assets/data/ted_pop.csv", function(data) {
   // Visualize the data
   visualize(data);
 });
@@ -189,17 +189,22 @@ function visualize(theData) {
     .html(function(d) {
       // x key
       var theX;
-      // Grab the state name.
+
+      // Create dynamic values for the tooltip
       var theTitle = "<div>" + d.title + "</div>";
       var theFilmDate = "<div>" + "Filmed Date: " + d.film_date + "</div>";
       // Snatch the y value's key and value.
       var theY = "<div>" + curY + ": " + d[curY] + "</div>";
-      // If the x key is poverty
+
+      //MARIAH: EXAMPLE OF PUTTING A PICTURE INSIDE THE TOOLTIP
+      var thePicture = "<img src='http://r.ddmcdn.com/s_f/o_1/cx_462/cy_245/cw_1349/ch_1349/w_720/APL/uploads/2015/06/caturday-shutterstock_149320799.jpg' style='width:40px;height:40px'>"
+      
+
+      //MARIAH: SETTING THE X VALUES
       if (curX === "views") {
         // Grab the x key and a version of the value formatted to show percentage
         theX = "<div>" + curX + ": " + d[curX] + "</div>";
-      }
-      else {
+      }else {
         // Otherwise
         // Grab the x key and a version of the value formatted to include commas after every third digit.
         theX = "<div>" +
@@ -209,7 +214,7 @@ function visualize(theData) {
           "</div>";
       }
       // Display what we capture.
-      return theTitle + theFilmDate + theX + theY;
+      return theTitle + theFilmDate + theX + theY + thePicture;
     });
   // Call the toolTip function.
   svg.call(toolTip);
@@ -230,6 +235,8 @@ function visualize(theData) {
     xMax = d3.max(theData, function(d) {
       return parseFloat(d[curX]) * 1.10;
     });
+
+    //MARIAH: SET PARAMETERS SO THAT WE CAN SCALE ACCORDINGLY
   }
 
   // b. change the min and max for y
@@ -315,7 +322,7 @@ function visualize(theData) {
 
 
   var config = {
-    "avatar_size" : 3
+    "avatar_size" : 20
 	}
   
   var defs = svg.append('svg:defs');
@@ -325,12 +332,12 @@ function visualize(theData) {
     .attr("id", "ted_icon")
     .attr("width", config.avatar_size)
     .attr("height", config.avatar_size)
-    .attr("patternUnits", "userSpaceOnUse")
+    .attr("patternUnits", "objectBoundingBox")
     .append("svg:image")
     // .attr("xlink:xlink:href", function(d) { return (d.url);})
-    .attr("xlink:xlink:href", 'https://cdnarchitect.s3.amazonaws.com/wp-content/uploads/2017/06/TG-11-TEDTalks.jpg')
-    .attr("width", config.avatar_size)
-    .attr("height", config.avatar_size)
+    .attr("xlink:xlink:href", "https://pe.tedcdn.com/images/ted/12753_254x191.jpg")
+    .attr("width", config.avatar_size + 20)
+    .attr("height", config.avatar_size + 20)
     .attr("x", 0)
     .attr("y", 0)
     .attr("preserveAspectRatio", "xMinYMin slice");
@@ -360,12 +367,15 @@ function visualize(theData) {
     .on("mouseover", function(d) {
       // Show the tooltip
       toolTip.show(d);
+      toolTip.style("display",null);
+      
       // Highlight the state circle's border
       d3.select(this).style("stroke", "#323232");
     })
     .on("mouseout", function(d) {
       // Remove the tooltip
-      toolTip.hide(d);
+      toolTip.style("display","none");
+      // toolTip.hide(d);
       // Remove highlight
       d3.select(this).style("stroke", "#e3e3e3");
     });
