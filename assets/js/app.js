@@ -37,10 +37,10 @@ var svg = d3
 var circRadius;
 function crGet() {
   if (width <= 530) {
-    circRadius = 5;
+    circRadius = 2;
   }
   else {
-    circRadius = 15;
+    circRadius = 5;
   }
 }
 crGet();
@@ -223,12 +223,12 @@ function visualize(theData) {
   function xMinMax() {
     // min will grab the smallest datum from the selected column.
     xMin = d3.min(theData, function(d) {
-      return parseFloat(d[curX]) * 0.90;
+      return parseFloat(d[curX]) * 1
     });
 
     // .max will grab the largest datum from the selected column.
     xMax = d3.max(theData, function(d) {
-      return parseFloat(d[curX]) * 1.10;
+      return parseFloat(d[curX]) * 0.05;
     });
   }
 
@@ -236,12 +236,12 @@ function visualize(theData) {
   function yMinMax() {
     // min will grab the smallest datum from the selected column.
     yMin = d3.min(theData, function(d) {
-      return parseFloat(d[curY]) * 0.90;
+      return parseFloat(d[curY]) * 1;
     });
 
     // .max will grab the largest datum from the selected column.
     yMax = d3.max(theData, function(d) {
-      return parseFloat(d[curY]) * 1.10;
+      return parseFloat(d[curY]) * 0.05;
     });
   }
 
@@ -316,7 +316,7 @@ function visualize(theData) {
 
   var config = {
     "avatar_size" : 3
-	}
+  }
   
   var defs = svg.append('svg:defs');
 
