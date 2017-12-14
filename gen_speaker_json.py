@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[99]:
 
 import pandas as pd
 import numpy as np
@@ -10,144 +10,103 @@ import json
 from pandas.io.json import json_normalize
 import datetime
 import ast
+import pymongo
+from pymongo import MongoClient
+from collections import OrderedDict, defaultdict
 
 
-# In[19]:
+# In[100]:
+i=10
+conn = 'mongodb://system:system@ds127936.mlab.com:27936/heroku_njlc7ffz'
+client = pymongo.MongoClient(conn)
 
-from odo import odo
-import pandas as pd
+db = client.heroku_njlc7ffz
+tedtalks = db.tedtalks_1
 
-df = odo('mongodb://system:system@ds127936.mlab.com:27936/heroku_njlc7ffz::tedtalks', pd.DataFrame)
-df
-
-
-# In[3]:
-
-import ast
-df['tags'] = df['tags'].apply(lambda x: ast.literal_eval(x))
-df['tags']
+df = pd.DataFrame(list(tedtalks.find()))
+df.head()
 
 
-# In[4]:
+# In[111]:
+
+# import ast
+# df['tags'] = df['tags'].apply(lambda x: ast.literal_eval(x))
+# df['tags'].head()
+
+
+# In[112]:
 
 s = df.apply(lambda x: pd.Series(x['tags']),axis=1).stack().reset_index(level=1, drop=True)
 s.name = 'theme'
 
 
-# In[5]:
+# In[113]:
 
 
 theme_df = df.drop('tags', axis=1).join(s)
 theme_df.head()
 
 
-# In[6]:
+# In[114]:
 
 pop_themes = pd.DataFrame(theme_df['theme'].value_counts()).reset_index()
 pop_themes.columns = ['theme', 'talks']
 pop_themes.head(10)
 
 
-# In[7]:
+# In[115]:
 
 pop_list=pop_themes['theme'].head(4).tolist()
 pop_list
 
 
-# In[8]:
+# In[200]:
 
 # pop_theme_talks = theme_df.loc[(theme_df['theme'].isin(pop_themes.head(10)['theme'])) & (theme_df['theme'] != 'TEDx')]
 top_tags_df=theme_df.loc[theme_df['theme'].isin(pop_list)]
 top_tags_df
 
 
-# In[9]:
+# In[201]:
 
-top_technology_df=theme_df.loc[theme_df['theme']=="technology"].sort_values('views', ascending=False)[:10]
+top_technology_df=theme_df.loc[theme_df['theme']=="technology"].sort_values('views', ascending=False)[:i]
 top_10_technology=top_technology_df[['main_speaker','speaker_occupation','url','image_url']].reset_index(drop=True)
-top_10_technology.to_json(orient='records')
+top_technology=json.dumps(top_10_technology.to_dict('records'))
 
 
-# In[10]:
+# In[202]:
 
-top_science_df=theme_df.loc[theme_df['theme']=="science"].sort_values('views', ascending=False)[:10]
+top_science_df=theme_df.loc[theme_df['theme']=="science"].sort_values('views', ascending=False)[:i]
 top_10_science=top_science_df[['main_speaker','speaker_occupation','url','image_url']].reset_index(drop=True)
-top_10_science.to_json(orient='records')
+top_science=json.dumps(top_10_science.to_dict('records'), indent=4)   
 
 
-# In[11]:
+# In[203]:
 
-top_global_df=theme_df.loc[theme_df['theme']=="global issues"].sort_values('views', ascending=False)[:10]
+top_global_df=theme_df.loc[theme_df['theme']=="global issues"].sort_values('views', ascending=False)[:i]
 top_10_global=top_global_df[['main_speaker','speaker_occupation','url','image_url']].reset_index(drop=True)
-top_10_global.to_json(orient='records')
+top_global=json.dumps(top_10_global.to_dict('records'))
 
 
-# In[12]:
+# In[216]:
 
-top_culture_df=theme_df.loc[theme_df['theme']=="culture"].sort_values('views', ascending=False)[:10]
+top_culture_df=theme_df.loc[theme_df['theme']=="culture"].sort_values('views', ascending=False)[:i]
 top_10_culture=top_culture_df[['main_speaker','speaker_occupation','url','image_url']].reset_index(drop=True)
-top_10_culture.to_json(orient='records')
+top_culture=json.dumps(top_10_culture.to_dict('records'))
 
 
-# In[13]:
-
-sub_technology_data = {"main_speaker": "Technology",
-        "speaker_occupation": "Technology Speakers",
-        "link": "https://www.ted.com/topics/technology",
-        "children": top_10_technology.to_json(orient='records')}
-sub_technology_data
-
-
-# In[14]:
-
-sub_global_data = {"main_speaker": "Global Issues",
-        "speaker_occupation": "Global Issues Speakers",
-        "link": "https://www.ted.com/topics/global+issues",
-        "children": top_10_global.to_json(orient='records')}
-sub_global_data
-
-
-# In[15]:
-
-sub_science_data = {"main_speaker": "Science",
-        "speaker_occupation": "Science Speakers",
-        "link": "https://www.ted.com/topics/science",
-        "children": top_10_science.to_json(orient='records')}
-sub_science_data
-
-
-# In[16]:
-
-sub_culture_data = {"main_speaker": "Culture",
-        "speaker_occupation": "Culture Speakers",
-        "link": "https://www.ted.com/topics/culture",
-        "children": top_10_culture.to_json(orient='records')}
-sub_culture_data
-
-
-# In[17]:
-
-data=({"main_speaker": "TedTalk",
-      "speaker_occupation": "A trendy talk", 
-      "link": "https://www.ted.com/",
-      "img": "https://cdn0.iconfinder.com/data/icons/circle-icons/512/ted.png",    
-      "children": (sub_technology_data, sub_science_data, sub_global_data, sub_culture_data)})
-data
-
-
-# In[18]:
-
-with open('speakers.json', 'w') as outfile:
-     json.dump(data, outfile, sort_keys = True, indent = 4,
-               ensure_ascii = False)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
+# In[215]:
+#outfile="speaker"+ i +".json"
+import sys
+sys.stdout = open("speakers.json", "w+")
+print("{\"main_speaker\": \"TedTalk\", \"speaker_occupation\": \"A trendy talk\", \"url\": \"https://www.ted.com/\",\"image_url\": \"https://cdn0.iconfinder.com/data/icons/circle-icons/512/ted.png\",")
+print("\"children\": [")
+print("{\"main_speaker\": \"Technology\",\"speaker_occupation\": \"Technology Speakers\",\"url\": \"https://www.ted.com/topics/technology\",")
+print("\"children\": "+ top_technology +"},") 
+print("{\"main_speaker\": \"Science\",\"speaker_occupation\": \"Science Speakers\",\"url\": \"https://www.ted.com/topics/science\",")
+print("\"children\": "+ top_science +"},")
+print("{\"main_speaker\": \"Global Issues\",\"speaker_occupation\": \"Global Issues Speakers\",\"url\": \"https://www.ted.com/topics/global+issues\",")
+print("\"children\": "+ top_global +"},")
+print("{\"main_speaker\": \"Culture\",\"speaker_occupation\": \"Culture Speakers\",\"url\": \"https://www.ted.com/topics/culture\",")
+print("\"children\": "+ top_culture +"}]}")
 
