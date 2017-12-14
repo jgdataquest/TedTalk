@@ -1,3 +1,78 @@
+
+var createFilters = function(){
+  // //CHECKBOX FUNCTIONS
+  // //When user clicks on a filter, only show selected information
+  var input_types = [
+    'education',
+    'technology',
+    'travel',
+    'science',
+    'music'
+
+  ];
+
+  //Making the inputs
+  var ul = d3.select("ul#input-types")
+    .selectAll('li')
+    .data(input_types)
+    .enter()
+    .append('li')
+    .append('p')
+    .text(function(d){
+      return d;
+  });
+  //making them into checkboxes
+  ul.append('input')
+    .attr('type', "checkbox")
+    .attr('id', function(d){
+      return d;
+    });
+
+
+
+  d3.select('#education').on('change', update);
+  update();
+
+  function update(){
+    if(d3.select('#education').property('checked') == true){
+      console.log('checked');
+      console.log(data);
+
+    }else{
+      console.log('unchecked')
+    }
+  }
+
+}
+
+
+//===============
+//global function for data
+// var dataset;
+
+// var clickData = d3.csv("assets/data/ted_w_images.csv", function(data) {
+//   dataset = data;
+// });
+
+
+// setTimeout(function(){
+//   d3.select('#education').on('change', update);
+//   update();
+
+//   function update(){
+//     if(d3.select('#education').property('checked') == true){
+//       console.log('checked');
+//       console.log(dataset);
+
+//     }else{
+//       console.log('unchecked')
+//     }
+//   }
+
+// },2000);
+
+
+
 // D3 Animated Scatter Plot
 
 // Section 1: Pre-Data Setup
@@ -30,6 +105,8 @@ var svg = d3
   .attr("width", width)
   .attr("height", height)
   .attr("class", "chart");
+
+
 
 // Set the radius for each dot that will appear in the graph.
 // Note: Making this a function allows us to easily call
@@ -82,6 +159,7 @@ xText
   .attr("class", "aText active x")
   .text("Comments");
 // // 2. Age
+<<<<<<< HEAD:assets/js/app_org.js
 // xText
 //   .append("text")
 //   .attr("y", 0)
@@ -97,6 +175,23 @@ xText
 //   .attr("data-axis", "x")
 //   .attr("class", "aText inactive x")
 //   .text("Household Income (Median)");
+=======
+xText
+  .append("text")
+  .attr("y", 0)
+  .attr("data-name", "film_date")
+  .attr("data-axis", "x")
+  .attr("class", "aText inactive x")
+  .text("Years");
+// 3. Income
+xText
+  .append("text")
+  .attr("y", 26)
+  .attr("data-name", "views")
+  .attr("data-axis", "x")
+  .attr("class", "aText inactive x")
+  .text("View Count");
+>>>>>>> master:D3Chart/assets/js/app.js
 
 // B) Left Axis
 // ============
@@ -129,8 +224,9 @@ yText
   .attr("data-name", "views")
   .attr("data-axis", "y")
   .attr("class", "aText active y")
-  .text("views");
+  .text("View Count");
 
+<<<<<<< HEAD:assets/js/app_org.js
 // 2. Smokes
 // yText
 //   .append("text")
@@ -148,24 +244,49 @@ yText
 //   .attr("data-axis", "y")
 //   .attr("class", "aText inactive y")
 //   .text("Lacks Healthcare (%)");
+=======
+// 2. Comments
+yText
+  .append("text")
+  .attr("x", 0)
+  .attr("data-name", "comments")
+  .attr("data-axis", "y")
+  .attr("class", "aText inactive y")
+  .text("Comments");
+
+// 3. Ratings
+yText
+  .append("text")
+  .attr("y", 26)
+  .attr("data-name", "ratings")
+  .attr("data-axis", "y")
+  .attr("class", "aText inactive y")
+  .text("Ratings");
+>>>>>>> master:D3Chart/assets/js/app.js
 
 // 2. Import our .csv file.
 // ========================
-// This data file includes state-by-state demographic data from the US Census
-// and measurements from health risks obtained
-// by the Behavioral Risk Factor Surveillance System.
+// This data file ted talk information with images
 
 // Import our CSV data with d3's .csv import method.
+<<<<<<< HEAD:assets/js/app_org.js
 d=d3.csv("assets/data/ted_main_clean.csv", function(data) {
+=======
+d = d3.csv("assets/data/ted_w_images.csv", function(data) {
+>>>>>>> master:D3Chart/assets/js/app.js
   // Visualize the data
   visualize(data);
+  createFilters();
 });
+
 
 // 3. Create our visualization function
 // ====================================
 // We called a "visualize" function on the data obtained with d3's .csv method.
 // This function handles the visual manipulation of all elements dependent on the data.
 function visualize(theData) {
+
+
   // PART 1: Essential Local Variables and Functions
   // =================================
   // curX and curY will determine what data get's represented in each axis.
@@ -191,15 +312,29 @@ function visualize(theData) {
       var theX;
       // Grab the state name.
       var theTitle = "<div>" + d.title + "</div>";
-      var theFilmDate = "<div>" + "Filmed Date: " + d.film_date + "</div>";
+      var theSpeaker = "<div>Main Speaker:" + d.main_speaker + "</div>";
+      // var theFilmDate = "<div>" + "Filmed Date: " + d.film_date + "</div>";
       // Snatch the y value's key and value.
       var theY = "<div>" + curY + ": " + d[curY] + "</div>";
+<<<<<<< HEAD:assets/js/app_org.js
       // If the x key is poverty
       if (curX === "views") {
         // Grab the x key and a version of the value formatted to show percentage
         theX = "<div>" + curX + ": " + d[curX] + "</div>";
       }
       else {
+=======
+
+      //MARIAH: EXAMPLE OF PUTTING A PICTURE INSIDE THE TOOLTIP
+      var thePicture = "<img src='" + d.image_url + "' style='width:70px;height:70px'>"
+      
+
+      //MARIAH: SETTING THE X VALUES
+      if (curX === "views") {
+        // Grab the x key and a version of the value formatted to show percentage
+        theX = "<div>" + curX + ": " + d[curX] + "</div>";
+      }else if(curX === "comments"){
+>>>>>>> master:D3Chart/assets/js/app.js
         // Otherwise
         // Grab the x key and a version of the value formatted to include commas after every third digit.
         theX = "<div>" +
@@ -207,9 +342,22 @@ function visualize(theData) {
           ": " +
           parseFloat(d[curX]).toLocaleString("en") +
           "</div>";
+      }else if(curX == "Years"){
+        // Grab the x key and a version of the value formatted to include commas after every third digit.
+        theX = "<div>" +
+          curX +
+          ": " +
+          parseFloat(d[curX]).toLocaleString("en") +
+          "</div>";
       }
+
       // Display what we capture.
+<<<<<<< HEAD:assets/js/app_org.js
       return theTitle + theFilmDate + theX + theY;
+=======
+      return theSpeaker + theTitle  + theX + theY + thePicture;
+
+>>>>>>> master:D3Chart/assets/js/app.js
     });
   // Call the toolTip function.
   svg.call(toolTip);
@@ -271,19 +419,24 @@ function visualize(theData) {
   // Notice in the range method how we include the margin and word area.
   // This tells d3 to place our circles in an area starting after the margin and word area.
   var xScale = d3
-    .scaleLinear()
-    .domain([xMin, xMax])
-    .range([margin + labelArea, width - margin]);
+    .scaleLog()//Scale logarithmically 
+    .range([margin + labelArea, width - margin])
+    .domain([xMin, xMax]);
+    
   var yScale = d3
-    .scaleLinear()
+    .scaleLog()//Scale logarithmically 
     .domain([yMin, yMax])
     // Height is inversed due to how d3 calc's y-axis placement
     .range([height - margin - labelArea, margin]);
 
   // We pass the scales into the axis methods to create the axes.
-  // Note: D3 4.0 made this a lot less cumbersome then before. Kudos to mbostock.
-  var xAxis = d3.axisBottom(xScale);
-  var yAxis = d3.axisLeft(yScale);
+  // Here we turn the ticks from the log numbers to actual numbers
+  var xAxis = d3.axisBottom(xScale).tickFormat(function (d) {
+        return xScale.tickFormat(4,d3.format(",d"))(d)
+  });
+  var yAxis = d3.axisLeft(yScale).tickFormat(function (d) {
+        return yScale.tickFormat(4,d3.format(",d"))(d)
+  });
 
   // Determine x and y tick counts.
   // Note: Saved as a function for easy mobile updates.
@@ -313,8 +466,8 @@ function visualize(theData) {
     .attr("class", "yAxis")
     .attr("transform", "translate(" + (margin + labelArea) + ", 0)");
 
-
   var config = {
+<<<<<<< HEAD:assets/js/app_org.js
     "avatar_size" : 35
 	}
   
@@ -336,11 +489,32 @@ function visualize(theData) {
     .attr("y", 0)
     .attr("preserveAspectRatio", "xMinYMin slice");
     
+=======
+    "avatar_size" : 20,
+	}
+
+    var defs = svg.append('svg:defs');
+
+    defs.append("svg:pattern")
+      .attr("id", "ted_icon")
+      .attr("width", config.avatar_size)
+      .attr("height", config.avatar_size)
+      .attr("patternUnits", "objectBoundingBox")
+      .append("svg:image")
+        .attr("xlink:xlink:href", '../icon.jpg')
+        .attr("width", config.avatar_size + 20)
+        .attr("height", config.avatar_size + 20)
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("preserveAspectRatio", "xMinYMin slice");
+
+
+>>>>>>> master:D3Chart/assets/js/app.js
   // Now let's make a grouping for our dots and their labels.
   var theCircles = svg.selectAll("g theCircles").data(theData).enter();
   
 
-  // We append the circles for each row of data (or each state, in this case).
+  // We append the circles for each row of data.
   theCircles
     .append("circle")
     // These attr's specify location, size and class.
@@ -406,6 +580,8 @@ function visualize(theData) {
       d3.select("." + d.title).style("stroke", "#e3e3e3");
     });
 
+
+
   // Part 4: Dynamize the Graph
   // ==========================
   // This section will allow the user to click on any label
@@ -437,7 +613,7 @@ function visualize(theData) {
         xScale.domain([xMin, xMax]);
 
         // Now use a transition when we update the xAxis.
-        svg.select(".xAxis").transition().duration(1800).call(xAxis);
+        svg.select(".xAxis").transition().duration(1000).call(xAxis);
 
         // With the axis changed, let's update the location of the state circles.
         d3.selectAll("circle").each(function() {
@@ -480,7 +656,7 @@ function visualize(theData) {
         yScale.domain([yMin, yMax]);
 
         // Update Y Axis
-        svg.select(".yAxis").transition().duration(1800).call(yAxis);
+        svg.select(".yAxis").transition().duration(1000).call(yAxis);
 
         // With the axis changed, let's update the location of the state circles.
         d3.selectAll("circle").each(function() {
@@ -576,4 +752,13 @@ function visualize(theData) {
       })
       .attr("r", circRadius / 3);
   }
-}
+
+
+
+
+}// end visualize
+
+
+
+
+// console.log('asdfs')
