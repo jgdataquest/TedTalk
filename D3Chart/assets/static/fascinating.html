@@ -24,31 +24,33 @@
         </div>  
 
         <div class="row"> 
-            <span>
-            <a href="#"><button class="btn-info">Funny</button></a>
-            <a href="/assets/static/beautiful.html"><button class="btn-info">Beautiful</button></a>
-            <a href="/assets/static/courageous.html"><button class="btn-info">Courageous</button></a>
-             <a href="/assets/static/confusing.html"><button class="btn-info">Confusing</button></a>         
-            <a href="/assets/static/fascinating.html"><button class="btn-info">Fascinating</button></a>
-            <a href="/assets/static/ingenious.html"><button class="btn-info">Ingenious</button></a>
-            </span>
-          </div>  
-       
+          <span>
+          <a href="#"><button class="btn-info">Funny</button></a>
+          <a href="/assets/static/beautiful.html"><button class="btn-info">Beautiful</button></a>
+          <a href="/assets/static/courageous.html"><button class="btn-info">Courageous</button></a>
+           <a href="/assets/static/confusing.html"><button class="btn-info">Confusing</button></a>         
+          <a href="#"><button class="btn-info">Fascinating</button></a>
+          <a href="/assets/static/ingenious.html"><button class="btn-info">Ingenious</button></a>
+          <a href="/assets/static/obnoxious.html"><button class="btn-info">Obnoxious</button></a>             
+          </span>
+        </div>  
+      </div>
 
-          <div class="col-sm-2 col-md-3 col-lg-2">
-            <div class="row"></div>
-          </div>
+      <div class="col-sm-2 col-md-3 col-lg-2">
+        <div class="row"> 
+
         </div>
+      </div>
 
     </div> <!-- End row -->  
   <script type="text/javascript">
     var svg = dimple.newSvg("#scatter",690, 400);
 
-    d3.csv("../assets/data/normalized_rating_25.csv", function (data) {
+    d3.csv("../data/normalized_rating_25.csv", function (data) {
       // console.log(data);
 
       var curX = "Total";
-      var curY = "Funny";
+      var curY = "Fascinating";
 
 
       var chart = new dimple.chart(svg, data);
