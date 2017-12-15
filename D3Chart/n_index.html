@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+  <div class="container">
+    <div class="row">
+
+      <div class="col-sm-2 col-md-3 col-lg-12">
+        <div class="row"></div>
+      </div>
+
+      <div class="col-sm-8 col-md-9 col-lg-10">
+        <div id="scatter">
+        <!-- We append our chart here. -->
+        </div>      
+      </div>
+
+      <div class="col-sm-2 col-md-3 col-lg-12">
+        <div class="row"></div>
+      </div>
+
+    </div> <!-- End row -->
+  </div>
+</body>
+<script src="//d3js.org/d3.v4.0.0-alpha.35.min.js"></script>
+<script src="http://dimplejs.org/dist/dimple.v2.3.0.min.js"></script>
+<link rel="stylesheet" href="assets/css/styles_new.css">
+
+<script>
+//Set Basic Chart params
+var margin = { top: 30, right: 150, bottom: 40, left: 150 };
+var width = 1200 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+//Declare axis variables for later
+var xMin;
+var xMax;
+var yMin;
+var yMax;
+
+//Scatter plot SVG
+var svg = d3.select("#scatter")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+//Colorize legend
+var color = d3.scaleCategory20();
+
+//Import our data
+d3.csv("../assets/data/ted_w_images.csv", function(error, data) {
+  console.log(data);
+  // data pre-processing
+  data.forEach(function(d) {
+    //initial x and y values
+    d.y = +d["comments"];
+    d.x = +d["views"];
+    //radius based on this value
+    d.r = +d["views"];
+  });
+
+  data.sort(function(a,b) {return b.r - a.r; });
+
+  //min and max functions
+  function xMinMax() {
+    // min will grab the smallest datum from the selected column.
+    xMin = d3.min(data, function(d) {
+      return parseFloat(d.x * 0.75);
+    });
+
+    // .max will grab the largest datum from the selected column.
+    xMax = d3.max(data, function(d) {
+      return parseFloat(d.x * 1.20);
+    });
+  }
+
+  // b. change the min and max for y
+  function yMinMax() {
+    // min will grab the smallest datum from the selected column.
+    yMin = d3.min(data, function(d) {
+      return parseFloat(d[d.y]) * 0.90;
+    });
+
+    // .max will grab the largest datum from the selected column.
+    yMax = d3.max(data, function(d) {
+      return parseFloat(d[d.y]) * 1.10;
+    });
+  }
+
+  //call max and min so we can use them
+  xMinMax();
+  yMinMax();
+
+  //create scales and make them logarithmic so that we can center our map better
+  var xscale = d3.scaleLog()
+    .domain([xMin, xMax])
+    .range([0.1,width]);
+
+  //create scales and make them logarithmic so that we can center our map better
+  var yscale = d3.scaleLog()
+    .domain([yMin, yMax])
+    .range([height,0.1]);
+
+  //set bubble radius
+  var radius = d3.scaleSqrt()
+    .range([5,10]);
+
+  //format the ticks so that theyre normal vs scientific
+  var xAxis = d3.axisBottom()
+    .tickSize(-height)
+    .scale(xscale)
+    .tickFormat(function (d) {
+          return xscale.tickFormat(4,d3.format(",d"))(d)
+    });
+  //format the ticks so that theyre normal vs scientific
+  var yAxis = d3.axisLeft()
+    .tickSize(-width)
+    .scale(yscale)
+    .tickFormat(function (d) {
+          return yscale.tickFormat(4,d3.format(",d"))(d)
+    });
+
+  yscale.domain(d3.extent(data, function(d) {
+    return d.y;
+  })).nice();
+
+  radius.domain(d3.extent(data, function(d) {
+    return d.r;
+  })).nice();
+
+  //contain axis information in an svg group for x and y axis
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .attr("class", "x axis")
+    .call(xAxis);
+  //contain axis information in an svg group for x and y axis
+  svg.append("g")
+    .attr("transform", "translate(0,0)")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+  //make a group for our bubbles
+  var group = svg.selectAll("g.bubble")
+    .data(data)
+    .enter().append("g")
+    .attr("class", "bubble")
+    .attr("transform", function(d) {
+      return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")"
+    });
+
+  //append color to the circle group
+  group
+    .append("circle")
+    .attr("r", function(d) { return radius(d.r);  })
+    //this is the data for our legend
+    .style("fill", function(d) {
+      return color(d["main_speaker"]);
+    })
+
+  // var vidCategories = ['education', 'technology','entertainment','business','environment']
+  // //append color to the circle group
+  // group
+  //   .append("circle")
+  //   .data(vidCategories)
+  //   .enter()
+  //   .attr("r", function(d) { return radius(d.r);  })
+  //   //this is the data for our legend
+  //   .style("fill", function(d) {
+  //     return color(vidCategories);
+  //   })
+
+  //tooltip essentially --> need to fix
+  group
+    .append("text")
+    .attr("x", function(d) { return radius(d.r); })
+    .attr("alignment-baseline", "middle")
+    .text(function(d) {
+      var info = d["main_speaker"] + ' : ' +d["views"]
+      return info;  
+    });
+
+  //fix this label
+  svg.append("text")
+    .attr("x", 6)
+    .attr("y", -2)
+    .attr("class", "label")
+    .text("Runs (86)");
+  //fix this label
+  svg.append("text")
+    .attr("x", width-2)
+    .attr("y", height-6)
+    .attr("text-anchor", "end")
+    .attr("class", "label")
+    .text("At Bats (86)");
+
+  //Legend ----
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(2," + i * 14 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width)
+      .attr("width", 12)
+      .attr("height", 12)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width + 26)
+      .attr("y", 6)
+      .attr("dy", ".5em")
+      .style("text-anchor", "start")
+      //text populates with our data that was previously defined 
+      .text(function(d) {return d;});
+
+var legendMatches = [];
+var result;
+  //looks for a match 
+  legend.on("click", function(type) {
+      // d3.selectAll(".legend")
+      //   .style("opacity", 0.1);
+      d3.select(this)
+        .style("opacity", 1)
+        .attr("class", "active");
+      d3.selectAll(".bubble")
+        .style("opacity", 0.045)
+        //will filter all the data and look for a match (type)
+        .filter(function(d,i) {
+          if(d["main_speaker"] == type){
+            legendMatches.push(d["main_speaker"]);
+            // console.log(d["main_speaker"])
+          }
+
+          //name of clicked
+          // console.log(legendMatches["main_speaker"] == type);
+
+         // //allll the names -> true/false
+         // console.log(d["main_speaker"]);
+
+         // //allll the names -> true/false
+         // console.log(legendMatches[i]== type);
+         
+        // console.log(legendMatches);
+          legendMatches.forEach(function(element,index){
+            //true false
+            // console.log(element == d['main_speaker']);
+            // console.log(element)
+            result = element == d['main_speaker'];
+            // console.log(element);
+            return result;
+          });
+
+          //name of who we're looking for 'ken robinson'
+          // console.log(type);
+          // console.log(result);
+          return result;
+          
+        })
+        //after we have a match, make opacity of matches 100%
+        .style("opacity", 1);
+        
+
+
+    })
+    // .on("mouseout", function(type) {
+    //   d3.selectAll(".legend")
+    //     .style("opacity", 1);
+    //   d3.selectAll(".bubble")
+    //     .style("opacity", 1);
+    // });
+    // console.log(legendMatches);
+    //-----------------
+
+});
+
+// function updateGraph(data1, i)
+</script>
