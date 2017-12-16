@@ -8,6 +8,10 @@ header {
   padding: 154px 0 100px;
 }
 
+.navbar-dark .navbar-brand {
+  text-color: #dc3545
+}
+
 @media (min-width: 992px) {
   header {
     padding: 156px 0 100px;
